@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ServiceProcess;
 using UDPServiceDiscovery;
 
 namespace TestServer
@@ -37,5 +38,10 @@ namespace TestServer
             Console.WriteLine("Resources disposed. press enter key to exit.");
             Console.ReadLine();
         }
+    }
+
+    public class MainService : ServiceBase
+    {
+        
     }
 }

@@ -12,18 +12,16 @@ namespace UDPServiceDiscovery
         private string _multicastGroup = "239.255.255.101";
 
         private readonly int _multicastPort;
- 
 
         private bool _disposed;
 
-
         public event EventHandler<ServiceDiscoveryEventArgs> OnDiscovery;
 
-        public MultiCastReceiver(int port=12678) 
+        public MultiCastReceiver(int port=12678)
         {
             _multicastPort = port;
-            var ipaddr = IPAddress.Parse(_multicastGroup);
-            this.JoinMulticastGroup(ipaddr);
+            var groupAddress = IPAddress.Parse(_multicastGroup);
+            this.JoinMulticastGroup(groupAddress);
             this.EnableBroadcast = false;
           
             var localIpEnd=new IPEndPoint(IPAddress.Any, _multicastPort);
