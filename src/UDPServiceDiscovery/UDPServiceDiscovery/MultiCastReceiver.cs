@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace UDPServiceDiscovery
 {
-    public class MultiCastReceiver:UdpClient
+    public class MultiCastReceiver : UdpClient
     {
         private string _multicastGroup = "239.255.255.101";
 
@@ -19,40 +19,66 @@ namespace UDPServiceDiscovery
 
         public event EventHandler<ServiceDiscoveryEventArgs> OnDiscovery;
 
-        public MultiCastReceiver(string multiCastGroupIpAddr= "239.255.255.101", int port=12678)
+        public MultiCastReceiver(string multiCastGroupIpAddr = "239.255.255.101", int port = 12678)
         {
             _multicastGroup = multiCastGroupIpAddr;
             _multicastPort = port;
             var groupAddress = IPAddress.Parse(_multicastGroup);
 
-           
+
             this.EnableBroadcast = false;
 
+
+
+
+
             var localAddress = IPAddress.Any;
- 
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32S || Environment.OSVersion.Platform == PlatformID.Win32Windows || Environment.OSVersion.Platform == PlatformID.WinCE)
+            {
+                var nic = NetworkHelper.GetConnectedNetworkInterfaces().FirstOrDefault();
+
+                var localaddr = nic.GetIPProperties().UnicastAddresses
+                    .FirstOrDefault(p => p.Address.AddressFamily == AddressFamily.InterNetwork).Address;
+
+                if (localaddr != null)
+                {
+                    Console.WriteLine("local addr :" + localaddr.ToString());
+                    localAddress = localaddr;
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("local addr : 0.0.0.0");
+            }
+
             var localIpEnd = new IPEndPoint(localAddress, _multicastPort);
- 
+
             //reuse port
-            this.Client.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.ReuseAddress,true);
+            this.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
             this.Client.Ttl = NetworkHelper.TTL;
             this.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, NetworkHelper.TTL);
             //this.Client.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastTimeToLive, 128);
-            this.Client.Bind(localIpEnd);
 
             this.JoinMulticastGroup(groupAddress, localAddress);
+
+            this.Client.Bind(localIpEnd);
+
+
         }
 
         public void Start()
-        { 
+        {
             this.BeginReceive(OnReceived, this);
         }
 
         public void Stop()
         {
             _disposed = true;
-            
-            
+
+
             var groupAddress = IPAddress.Parse(_multicastGroup);
             this.DropMulticastGroup(groupAddress);
             this.Dispose();
@@ -67,7 +93,7 @@ namespace UDPServiceDiscovery
             }
             var client = (UdpClient)ar.AsyncState;
 
-            var endpoint =(IPEndPoint) client.Client.LocalEndPoint;
+            var endpoint = (IPEndPoint)client.Client.LocalEndPoint;
 
             var remoteEndpoint = client.Client.RemoteEndPoint;
 
@@ -77,11 +103,11 @@ namespace UDPServiceDiscovery
             //put out received buffer data
 
             //Console.WriteLine(Encoding.UTF8.GetString(receivedfuffer));
- 
+
 
             OnOnDiscovery(new ServiceDiscoveryEventArgs(receivedfuffer));
 
-              client.BeginReceive(OnReceived, client);
+            client.BeginReceive(OnReceived, client);
 
         }
 
@@ -100,16 +126,16 @@ namespace UDPServiceDiscovery
 
                 foreach (var ev in ls)
                 {
-                     ev.Invoke(this,e);
+                    ev.Invoke(this, e);
                 }
 
-                
+
                 //await Task.WhenAll(tasks);
             }
-         
+
         }
 
 
-       
+
     }
 }

@@ -40,6 +40,27 @@ namespace UDPServiceDiscovery
             var groupAddress = IPAddress.Parse(_multicastGroup);
             var localAddress = IPAddress.Any;
 
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Environment.OSVersion.Platform == PlatformID.Win32S || Environment.OSVersion.Platform == PlatformID.Win32Windows || Environment.OSVersion.Platform == PlatformID.WinCE)
+            {
+                var nic = NetworkHelper.GetConnectedNetworkInterfaces().FirstOrDefault();
+
+                var localaddr = nic.GetIPProperties().UnicastAddresses
+                    .FirstOrDefault(p => p.Address.AddressFamily == AddressFamily.InterNetwork).Address;
+
+                if (localaddr != null)
+                {
+                    Console.WriteLine("local addr :" + localaddr.ToString());
+                    localAddress = localaddr;
+                }
+
+            }
+            else
+            {
+                Console.WriteLine("local addr : 0.0.0.0");
+            }
+
+
+
             this.EnableBroadcast = false;
 
   
