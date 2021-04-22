@@ -12,9 +12,9 @@ namespace TestClient
 
             var receiver = new MultiCastReceiver();
 
-            Console.WriteLine( "press enter key to start receive multicast ");
+            Console.WriteLine( " start receive multicast ");
 
-            Console.ReadLine();
+            //Console.ReadLine();
 
 
             receiver.OnDiscovery += Receiver_OnDiscovery;

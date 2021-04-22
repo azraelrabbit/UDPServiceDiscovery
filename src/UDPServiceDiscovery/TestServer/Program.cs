@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ServiceProcess;
+//using System.ServiceProcess;
 using UDPServiceDiscovery;
 
 namespace TestServer
@@ -16,11 +16,11 @@ namespace TestServer
             var timeSpan = 5000;
 
             Console.WriteLine("inpute your mesage and press enter key:");
-            var message=Console.ReadLine();
+            var message=Console.ReadLine()+"| from : "+Environment.MachineName;
 
             if (string.IsNullOrEmpty(message))
             {
-                message = "Empty Message";
+                message = "Empty Message, from: "+Environment.MachineName;
             }
 
             serer.Start(message,timeSpan);    
@@ -40,8 +40,5 @@ namespace TestServer
         }
     }
 
-    public class MainService : ServiceBase
-    {
-        
-    }
+    
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,19 +19,28 @@ namespace UDPServiceDiscovery
 
         public event EventHandler<ServiceDiscoveryEventArgs> OnDiscovery;
 
-        public MultiCastReceiver(int port=12678)
+        public MultiCastReceiver(string multiCastGroupIpAddr= "239.255.255.101", int port=12678)
         {
+            _multicastGroup = multiCastGroupIpAddr;
             _multicastPort = port;
             var groupAddress = IPAddress.Parse(_multicastGroup);
-            this.JoinMulticastGroup(groupAddress);
-            this.EnableBroadcast = false;
-          
-            var localIpEnd=new IPEndPoint(IPAddress.Any, _multicastPort);
 
+           
+            this.EnableBroadcast = false;
+
+            var localAddress = IPAddress.Any;
+ 
+            var localIpEnd = new IPEndPoint(localAddress, _multicastPort);
+ 
             //reuse port
             this.Client.SetSocketOption(SocketOptionLevel.Socket,SocketOptionName.ReuseAddress,true);
+
+            this.Client.Ttl = NetworkHelper.TTL;
+            this.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, NetworkHelper.TTL);
+            //this.Client.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.MulticastTimeToLive, 128);
             this.Client.Bind(localIpEnd);
 
+            this.JoinMulticastGroup(groupAddress, localAddress);
         }
 
         public void Start()
@@ -40,6 +51,10 @@ namespace UDPServiceDiscovery
         public void Stop()
         {
             _disposed = true;
+            
+            
+            var groupAddress = IPAddress.Parse(_multicastGroup);
+            this.DropMulticastGroup(groupAddress);
             this.Dispose();
         }
 
@@ -54,11 +69,15 @@ namespace UDPServiceDiscovery
 
             var endpoint =(IPEndPoint) client.Client.LocalEndPoint;
 
+            var remoteEndpoint = client.Client.RemoteEndPoint;
+
             var receivedfuffer = client.EndReceive(ar, ref endpoint);
+
 
             //put out received buffer data
 
             //Console.WriteLine(Encoding.UTF8.GetString(receivedfuffer));
+ 
 
             OnOnDiscovery(new ServiceDiscoveryEventArgs(receivedfuffer));
 
@@ -68,7 +87,29 @@ namespace UDPServiceDiscovery
 
         protected virtual void OnOnDiscovery(ServiceDiscoveryEventArgs e)
         {
-            Task.Run(() => OnDiscovery?.Invoke(this, e));
+            //Task.Run(() => OnDiscovery?.Invoke(this, e));
+
+            //OnDiscovery?.BeginInvoke(this, e, null, null);
+            //OnDiscovery?.Invoke(this, e);
+
+            if (OnDiscovery != null)
+            {
+                //var tasks = OnDiscovery.GetInvocationList().Cast<EventHandler<ServiceDiscoveryEventArgs>>().Select(s => s(this, e));
+
+                var ls = OnDiscovery.GetInvocationList().Cast<EventHandler<ServiceDiscoveryEventArgs>>();//.Where(p => p.Invoke(this, e));
+
+                foreach (var ev in ls)
+                {
+                     ev.Invoke(this,e);
+                }
+
+                
+                //await Task.WhenAll(tasks);
+            }
+         
         }
+
+
+       
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
@@ -24,15 +25,33 @@ namespace UDPServiceDiscovery
 
         private bool _disposed;
 
-        public MultiCastSender(int port=12678)
+        public MultiCastSender(string multiCastGroupIpAddr = "239.255.255.101", int port = 12678, bool useAny = false)
         {
+            _multicastGroup = multiCastGroupIpAddr;
             _multicastPort = port;
-
-            var ipaddr = IPAddress.Parse(_multicastGroup);
-            this.JoinMulticastGroup(ipaddr);
-            this.EnableBroadcast = false;
+            this.Ttl = NetworkHelper.TTL;
             
-            _multiCastEndpoint = new IPEndPoint(ipaddr, _multicastPort);
+            //reuse port
+            this.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+ 
+            this.Client.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.MulticastTimeToLive, NetworkHelper.TTL);
+
+
+            var groupAddress = IPAddress.Parse(_multicastGroup);
+            var localAddress = IPAddress.Any;
+
+            this.EnableBroadcast = false;
+
+  
+            _multiCastEndpoint = new IPEndPoint(groupAddress, _multicastPort);
+
+ 
+            var localIpEnd = new IPEndPoint(IPAddress.Any, _multicastPort);
+
+
+            this.JoinMulticastGroup(groupAddress,localAddress);
+       
+            this.Client.Bind(localIpEnd);
         }
 
 
@@ -40,8 +59,10 @@ namespace UDPServiceDiscovery
         {
 
             //this.message = message;
-            _timer = new Timer(OntimerCallback, null, 0, 5000);
-            _timer.Change(0, 5000);
+            //_timer = new Timer(OntimerCallback, null, 0, 5000);
+            _timer = new Timer(OntimerCallback,null,TimeSpan.Zero,TimeSpan.FromMilliseconds(interval));
+            //_timer.Change(0, 5000);
+            _timer.Change(TimeSpan.Zero, TimeSpan.FromMilliseconds(interval));
 
             _messageBuffer = Encoding.UTF8.GetBytes(message);
 
@@ -61,6 +82,9 @@ namespace UDPServiceDiscovery
         {
             _disposed = true;
             _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+
+            var groupAddress = IPAddress.Parse(_multicastGroup);
+            this.DropMulticastGroup(groupAddress);
 
             this.Dispose();
  

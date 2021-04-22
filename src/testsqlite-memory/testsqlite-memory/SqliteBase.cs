@@ -20,7 +20,54 @@ namespace ConsoleApp1
 
         public SqliteBase()
         {
- 
+            //开启sqlite多线程模式
+
+            //Batteries_V2.Init();
+
+            //raw.sqlite3_shutdown();
+            //SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
+
+            Batteries_V2.Init();
+
+            var sp=new SQLite3Provider_e_sqlite3();
+             
+            SQLitePCL.raw.SetProvider(sp);
+
+            var ret=SQLitePCL.raw.sqlite3_config(SQLitePCL.raw.SQLITE_CONFIG_MULTITHREAD);
+            //SQLitePCL.raw.SetProvider(new SQLite3Provider_e_sqlite3());
+            //Batteries_V2.Init();
+            if (ret == raw.SQLITE_OK)
+            {
+                //success
+                Console.WriteLine("Setup Mutex Success.");
+            }
+            else
+            {
+                //fault
+                Console.WriteLine("Setup Mutex Faild.");
+            }
+
+
+
+            var threads=SQLitePCL.raw.sqlite3_threadsafe();
+            
+
+            if (threads == 2)
+            {
+                Console.WriteLine("Curent Thread: MultiThread");
+            }
+            else if(threads==1)
+            {
+                Console.WriteLine("Curent Thread: Serialized");
+            }
+            else
+            {
+                Console.WriteLine("Curent Thread: Mutexing code omitted");
+            }
+
+
+            //Batteries_V2.Init();
+
             // base(connstr);
         }
 
@@ -31,26 +78,34 @@ namespace ConsoleApp1
 
         public IDbConnection GetConnection()
         {
-            var conn = new SqliteConnection(Connstr); //or  Microsoft.Data.Sqlite.SqliteConnection
+            
+            var conn = new MySqliteConnection(Connstr); //or  Microsoft.Data.Sqlite.SqliteConnection
+
+
+            
+            
 
             //raw.sqlite3_backup_init(conn.Handle,)
 
 
 
             conn.Open();
-            return conn;
+
+            var result = conn.Execute("");
+
+            return conn as SqliteConnection;
         }
 
         public IDbConnection GetStaticConnection()
         {
-            var conn = new SqliteConnection(Connstr); //or  Microsoft.Data.Sqlite.SqliteConnection
+            var conn = new MySqliteConnection(Connstr); //or  Microsoft.Data.Sqlite.SqliteConnection
 
             //raw.sqlite3_backup_init(conn.Handle,)
             
 
 
             conn.Open();
-            return conn;
+            return conn as SqliteConnection;
         }
 
         public void TestStr()
@@ -159,9 +214,9 @@ namespace ConsoleApp1
         public IDbConnection GetConnection(string strConn)
         {
              
-            var conn = new SqliteConnection(strConn);//or  Microsoft.Data.Sqlite.SqliteConnection
+            var conn = new MySqliteConnection(strConn);//or  Microsoft.Data.Sqlite.SqliteConnection
             conn.Open();
-            return conn;
+            return conn as SqliteConnection;
         }
 
 
@@ -208,4 +263,7 @@ namespace ConsoleApp1
             return new Tuple<bool, string>(isopen, msg);
         }
     }
+
+
+    
 }

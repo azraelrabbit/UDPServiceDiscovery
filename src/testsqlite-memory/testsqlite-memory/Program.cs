@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using ConsoleApp1;
 using Dapper;
+using testsqlit_ememory;
 
 namespace testsqlite_memory
 {
@@ -10,6 +11,12 @@ namespace testsqlite_memory
     {
         static void Main(string[] args)
         {
+
+            //var testexpando = new TestExpandoPerformance();
+
+            //testexpando.Test();
+            
+
 
             var sqlite = new SqliteBase();
 
@@ -25,6 +32,8 @@ namespace testsqlite_memory
             var progres = Process.GetCurrentProcess();
 
             var mem=progres.WorkingSet64/(1024d*1024d);// memory usage in Mb;
+ 
+            
 
             Console.WriteLine($"Memory Usage :\t\t{mem} Mb.");
 
