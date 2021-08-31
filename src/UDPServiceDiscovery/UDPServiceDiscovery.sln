@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UDPServiceDiscovery", "UDPServiceDiscovery\UDPServiceDiscovery.csproj", "{9722A748-522F-4E01-B389-E741827EDA8A}"
 EndProject
@@ -11,7 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestServer", "TestServer\Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\TestClient.csproj", "{3F6DE2C1-0997-4A05-BB81-2C2AF9C1FF0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{2E433C94-99CB-45C9-B395-352F4B5C01A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceTest", "ServiceTest\ServiceTest.csproj", "{2E433C94-99CB-45C9-B395-352F4B5C01A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AZ.UDPServiceDiscovery", "AZ.UDPServiceDiscovery\AZ.UDPServiceDiscovery.csproj", "{BFDF765A-4AD7-4DDD-AF98-E5502048EC5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDiscoverer", "TestDiscoverer\TestDiscoverer.csproj", "{0337180C-0DD4-43BF-BE33-877FBBE5D4CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,14 @@ Global
 		{2E433C94-99CB-45C9-B395-352F4B5C01A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E433C94-99CB-45C9-B395-352F4B5C01A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E433C94-99CB-45C9-B395-352F4B5C01A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFDF765A-4AD7-4DDD-AF98-E5502048EC5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFDF765A-4AD7-4DDD-AF98-E5502048EC5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFDF765A-4AD7-4DDD-AF98-E5502048EC5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFDF765A-4AD7-4DDD-AF98-E5502048EC5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0337180C-0DD4-43BF-BE33-877FBBE5D4CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0337180C-0DD4-43BF-BE33-877FBBE5D4CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0337180C-0DD4-43BF-BE33-877FBBE5D4CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0337180C-0DD4-43BF-BE33-877FBBE5D4CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +55,7 @@ Global
 		{FAC3CE63-7C98-4C19-8B40-86CC41D1F36F} = {B4FC02A8-CD7B-45E6-AF70-392163AC2BA3}
 		{3F6DE2C1-0997-4A05-BB81-2C2AF9C1FF0A} = {B4FC02A8-CD7B-45E6-AF70-392163AC2BA3}
 		{2E433C94-99CB-45C9-B395-352F4B5C01A7} = {B4FC02A8-CD7B-45E6-AF70-392163AC2BA3}
+		{0337180C-0DD4-43BF-BE33-877FBBE5D4CF} = {B4FC02A8-CD7B-45E6-AF70-392163AC2BA3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95174A17-B573-4311-B136-942039EF8A68}

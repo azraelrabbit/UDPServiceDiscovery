@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
-namespace UDPServiceDiscovery
+namespace AZ.UDPServiceDiscovery
 {
     public class MultiCastSender : UdpClient
     {
@@ -49,6 +47,7 @@ namespace UDPServiceDiscovery
                     Console.WriteLine("local addr :" + localaddr.ToString());
                     localAddress = localaddr;
                 }
+
             }
             else
             {
@@ -71,8 +70,6 @@ namespace UDPServiceDiscovery
             this.Client.Bind(localIpEnd);
         }
 
-       
-
 
         public void Start(string message,int interval=5000)
         {
@@ -86,7 +83,6 @@ namespace UDPServiceDiscovery
             _messageBuffer = Encoding.UTF8.GetBytes(message);
 
         }
-
         public void Start(byte[] msgBuf, int interval = 5000)
         {
 
@@ -118,7 +114,6 @@ namespace UDPServiceDiscovery
             }
             this.Send(msgBuf, msgBuf.Length, _multiCastEndpoint);
         }
-
         private void OntimerCallback(object state)
         {
             if (_disposed)
@@ -131,6 +126,10 @@ namespace UDPServiceDiscovery
 
         public void Stop()
         {
+            if (_disposed)
+            {
+                return;
+            }
             _disposed = true;
             _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
 

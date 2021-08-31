@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace UDPServiceDiscovery
+namespace AZ.UDPServiceDiscovery
 {
     public class MultiCastReceiver : UdpClient
     {
@@ -24,10 +20,8 @@ namespace UDPServiceDiscovery
             _multicastGroup = multiCastGroupIpAddr;
             _multicastPort = port;
             var groupAddress = IPAddress.Parse(_multicastGroup);
-
-
+ 
             this.EnableBroadcast = false;
-
  
             var localAddress = IPAddress.Any;
 
@@ -70,6 +64,10 @@ namespace UDPServiceDiscovery
 
         public void Stop()
         {
+            if (_disposed)
+            {
+                return;
+            }
             _disposed = true;
 
 
@@ -91,16 +89,13 @@ namespace UDPServiceDiscovery
 
             var remoteEndpoint = client.Client.RemoteEndPoint;
 
-            var remoteIpEndpoint = (IPEndPoint)remoteEndpoint;
+            var remoteIpEndpoint = (IPEndPoint) remoteEndpoint;
 
             var receivedfuffer = client.EndReceive(ar, ref endpoint);
 
 
             //put out received buffer data
-
-            //Console.WriteLine(Encoding.UTF8.GetString(receivedfuffer));
-
-
+ 
             OnOnDiscovery(new ServiceDiscoveryEventArgs(receivedfuffer, remoteIpEndpoint));
 
             client.BeginReceive(OnReceived, client);
@@ -109,29 +104,22 @@ namespace UDPServiceDiscovery
 
         protected virtual void OnOnDiscovery(ServiceDiscoveryEventArgs e)
         {
-            //Task.Run(() => OnDiscovery?.Invoke(this, e));
-
-            //OnDiscovery?.BeginInvoke(this, e, null, null);
-            //OnDiscovery?.Invoke(this, e);
-
+ 
             if (OnDiscovery != null)
             {
-                //var tasks = OnDiscovery.GetInvocationList().Cast<EventHandler<ServiceDiscoveryEventArgs>>().Select(s => s(this, e));
-
+ 
                 var ls = OnDiscovery.GetInvocationList().Cast<EventHandler<ServiceDiscoveryEventArgs>>();//.Where(p => p.Invoke(this, e));
 
                 foreach (var ev in ls)
                 {
                     ev.Invoke(this, e);
                 }
-
-
-                //await Task.WhenAll(tasks);
+ 
             }
 
         }
 
-
+      
 
     }
 }
